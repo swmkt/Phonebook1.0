@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <link href="css/style.css" rel="stylesheet">
+    <title>PhoneBook</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+
+<body onload="init()">
+    <div class="container">
+        <h1>Phonebook</h1>
+        <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#addContactModal" onclick="resetAddContactForm();">Add new contact</button>
+        <button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#importContactsModal">Import contacts</button>
+        <table class="table table-hover" id="contacts">
+            <thead>
+                <tr>
+                    <th>Phone
+                        <button onclick="sortContactsBy('phone', true)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet"></span></button>
+                        <button onclick="sortContactsBy('phone', false)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></button>
+                        <input type="search" id="phoneFilter" placeholder="phoneFilter" oninput="filterContacts();" class="form-control">
+                    </th>
+                    <th>Name
+                        <button onclick="sortContactsBy('name', true)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet"></span></button>
+                        <button onclick="sortContactsBy('name', false)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></button>
+                        <input type="search" id="nameFilter" placeholder="nameFilter" oninput="filterContacts();" class="form-control">
+                    </th>
+                    <th>Place
+                        <button onclick="sortContactsBy('place', true)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet"></span></button>
+                        <button onclick="sortContactsBy('place', false)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></button>
+                        <input type="search" id="placeFilter" placeholder="placeFilter" oninput="filterContacts();" class="form-control">
+                    </th>
+                    <th>Gender
+                        <button onclick="sortContactsBy('gender', true)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet"></span></button>
+                        <button onclick="sortContactsBy('gender', false)" type="button" class="btn-link"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></button>
+                        <input type="search" id="genderFilter" placeholder="genderFilter" oninput="filterContacts();" class="form-control">
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tdata">
+            </tbody>
+        </table>
+        <div id="contactView">
+        </div>
+        <!-- Modal add contact -->
+        <div id="addContactModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add new contact</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="addContactForm">
+                            <div class="form-group">
+                                <label for="phone">Phone*:</label>
+                                <input type="phone" class="form-control" id="phone" placeholder="Enter phone" title="Starts with 0 or +, length from 5 to 12" required>
+                                <!--pattern="[+|0][0-9]{5,12}"-->
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Name*:</label>
+                                <input type="text" class="form-control" id="name" placeholder="Enter name" title="Length <= 30">
+                            </div>
+                            <div class="form-group ui-widget">
+                                <label for="place">Place:</label>
+                                <input type="text" class="form-control" id="place" placeholder="Enter place">
+                            </div>
+                            <div class="form-group">
+                                <label>Gender*:</label>
+                                <label id="genderMale" class="radio-inline"><input type="radio" name="gender" value="Male" checked>Male</label>
+                                <label id="genderFemale" class="radio-inline"><input type="radio" name="gender" value="Female">Female</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="sign">Sign:</label>
+                                <select class="form-control" id="sign">
+                            <option value="notSelected"></option>
+                            <option value="Aries">Aries</option>
+                            <option value="Taurus">Taurus</option>
+                            <option value="Gemini">Gemini</option>
+                            <option value="Cancer">Cancer</option>
+                            <option value="Leo">Leo</option>
+                            <option value="Virgo">Virgo</option>
+                            <option value="Libra">Libra</option>
+                            <option value="Scorpio">Scorpio</option>
+                            <option value="Sagitarrius">Sagitarrius</option>
+                            <option value="Capricorn">Capricorn</option>
+                            <option value="Aquarius">Aquarius</option>
+                            <option value="Pisces">Pisces</option>
+                          </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="notes">Notes:</label>
+                                <textarea type="text" class="form-control" id="notes" placeholder="Enter notes" title="Length <= 500"></textarea>
+                            </div>
+                            <div id="alertMessageAdd" class="alertMessage"></div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="addNewContact()" type="button" class="btn btn-success">Add new contact</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal edit contact -->
+        <div id="editContactModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Edit contact</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="phone">Phone:</label>
+                                <input type="phone" class="form-control" id="editPhone" placeholder="Enter phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control" id="editName" placeholder="Enter name" required>
+                            </div>
+                            <div class="form-group ui-widget">
+                                <label for="place">Place:</label>
+                                <input type="text" class="form-control" id="editPlace" placeholder="Enter place">
+                            </div>
+                            <div class="form-group">
+                                <label>Gender:</label>
+                                <label class="radio-inline"><input type="radio" name="editGender" value="Male" id="Male" checked>Male</label>
+                                <label class="radio-inline"><input type="radio" name="editGender" value="Female" id="Female">Female</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="sign">Sign:</label>
+                                <select class="form-control" id="editSign">
+                            <option value="notSelected"></option>
+                            <option value="Aries">Aries</option>
+                            <option value="Taurus">Taurus</option>
+                            <option value="Gemini">Gemini</option>
+                            <option value="Cancer">Cancer</option>
+                            <option value="Leo">Leo</option>
+                            <option value="Virgo">Virgo</option>
+                            <option value="Libra">Libra</option>
+                            <option value="Scorpio">Scorpio</option>
+                            <option value="Sagitarrius">Sagitarrius</option>
+                            <option value="Capricorn">Capricorn</option>
+                            <option value="Aquarius">Aquarius</option>
+                            <option value="Pisces">Pisces</option>
+                        </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="notes">Notes:</label>
+                                <textarea type="text" class="form-control" id="editNotes" placeholder="Enter notes"></textarea>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div id="alertMessageEdit" class="alertMessage"></div>
+                        <button type="button" id="editButton" class="btn btn-success">Save contact</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal import contacts -->
+        <div id="importContactsModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Import contacts</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group importContacts">
+                            <textarea id="importContacts" class="form-control" rows="5" id="comment" placeholder="Insert contacts in special format here"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" onclick="importContacts()">Import</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="resetResult()">Close</button>
+                        <ul id="importResult" class="importResult"></ul>
+                        <div class="importExample">
+                            <h4>Import contacts example</h4>
+                            <p>
+                                0888104744	Петър Иванов	Варна	м	Везни	Този телефон ми го даде Симо на пловдиския панаир! <br/>
+                                029204473	Минчо	София	м	Скорпион<br/>
+                                0878663098	Ивайла	Варна	ж	Рак	служебен<br/>
+                                0898226184	Теодор Димитров	Пловдив	м	Козирог	<br/>
+                                032265401	Александър Станимиров	София	м	Телец<br/>	
+                                0885328559	Валентина Петрова	София	ж	Козирог	служебен от 2014-та<br/>
+
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Modal view contact -->
+        <div id="viewContactModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">View contact</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="phone">Phone:</label>
+                                <input type="phone" class="form-control" id="viewPhone" placeholder="" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control" id="viewName" placeholder="" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="place">Place:</label>
+                                <input type="text" class="form-control" id="viewPlace" placeholder="" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Gender:</label>
+                                <input type="text" class="form-control" id="viewGender" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Sign:</label>
+                                <input type="text" class="form-control" id="viewSign" readonly>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="notes">Notes:</label>
+                                <textarea type="text" class="form-control" id="viewNotes" placeholder="" readonly></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="js/script.js"></script>
+</body>
+
+</html>

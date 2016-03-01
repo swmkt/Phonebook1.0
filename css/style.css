@@ -1,0 +1,38 @@
+body {
+    font-size: 14px;
+    line-height: 24px;
+}
+
+.hide{
+    display: none;
+}
+.show{
+    display: block;
+}
+td, th{
+     width: 19%;
+}
+.btn-table{
+    margin-right: 1px;
+}
+.alertMessage{
+    color: red;
+    text-align: left;
+}
+.container{
+    min-width: 1140px;
+}
+.importExample{
+    text-align: left;
+    color: goldenrod;
+}
+ul.importResult{
+    text-align: left;
+    list-style: circle;
+}
+.importedString{
+    color: black;
+}
+.importedResult{
+    color: coral;
+}
